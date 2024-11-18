@@ -35,6 +35,8 @@ timer = Timer(40 * 1000)
 running = True
 game_active = True
 
+# Fonte para a pontuação
+score_font = pygame.font.SysFont(None, 40)
 
 # Loop principal do jogo
 while running:
@@ -68,6 +70,10 @@ while running:
         actor.draw_lives(screen, heart_image)
         for car in cars:
             car.draw(screen)
+            
+        # Exibir a pontuação
+        score_text = score_font.render(f"Pontuação: {actor.points}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
 
         # Exibir o temporizador
         timer.display(screen)
