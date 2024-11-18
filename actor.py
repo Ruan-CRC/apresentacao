@@ -1,7 +1,8 @@
 import pygame
-from images_and_sounds import *
+from images_and_sounds import load_sounds
 
-
+pygame.mixer.init()  # Inicializa o mixer para sons
+point_sound = load_sounds()[1]
 class Actor:
     def __init__(self, x, y, image, speed=3):
         self.x = x
@@ -38,6 +39,7 @@ class Actor:
     def increment_points(self):
         if self.y < 15:
             self.points += 1
+            point_sound.play()
             self.reset_position()
 
     def draw_lives(self, screen, heart_image):

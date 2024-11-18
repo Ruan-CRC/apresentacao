@@ -68,8 +68,8 @@ while running:
                 game_active = False
 
         # Aumentar pontos
-        if actor.increment_points():
-            point_sound.play()
+        actor.increment_points()
+        
 
         # Exibir a tela de jogo
         screen.blit(road_image, (0, 0))
