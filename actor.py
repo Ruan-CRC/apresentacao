@@ -1,4 +1,6 @@
 import pygame
+from images_and_sounds import *
+
 
 class Actor:
     def __init__(self, x, y, image, speed=3):

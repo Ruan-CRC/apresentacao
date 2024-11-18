@@ -20,3 +20,8 @@ def load_sounds():
     scream_sound = pygame.mixer.Sound('sons/grito.mp3')
     return collision_sound, point_sound, scream_sound
 
+# Função para carregar e tocar a música de fundo
+def play_background_music():
+    pygame.mixer.music.load("sons/trilha2.mp3")  # Substitua com o caminho do seu arquivo de música
+    pygame.mixer.music.set_volume(0.1)  # Ajuste o volume (0.0 a 1.0)
+    pygame.mixer.music.play(-1)  # -1 significa que a música vai tocar em loop infinito
