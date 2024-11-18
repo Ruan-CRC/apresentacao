@@ -14,9 +14,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Jogo Freeway")
 
 # Carregar imagens e sons
-actor_size = (40, 40)
-car_size = (60, 40);
-road_image, actor_image, car_images, heart_image = load_images(SCREEN_WIDTH, SCREEN_HEIGHT, actor_size, car_size)
+road_image, actor_image, car_images, heart_image = load_images(SCREEN_WIDTH, SCREEN_HEIGHT)
 print(len(car_images))
 collision_sound, point_sound, scream_sound = load_sounds()
 

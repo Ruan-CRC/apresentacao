@@ -1,10 +1,10 @@
 import pygame
 
-def load_images(screen_width, screen_height, actor_size, car_size):
+def load_images(screen_width, screen_height, car_size = (60, 40)):
     road_image = pygame.image.load('Imagens/estrada.png')
     road_image = pygame.transform.scale(road_image, (screen_width, screen_height))
     actor_image = pygame.image.load('Imagens/ator-1.png')
-    actor_image = pygame.transform.scale(actor_image, (actor_size))
+    actor_image = pygame.transform.scale(actor_image, (40, 40))
     car1_image = pygame.image.load('Imagens/carro-1.png')
     car1_image = pygame.transform.scale(car1_image, car_size)
     car2_image = pygame.image.load('Imagens/carro-2.png')
