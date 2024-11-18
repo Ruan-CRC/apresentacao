@@ -8,23 +8,26 @@ from timer import Timer
 pygame.init()
 
 # Tamanho da tela
-SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 400
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Jogo Freeway")
 
 # Carregar imagens e sons
-road_image, actor_image, car_images, heart_image = load_images()
+actor_size = (40, 40)
+car_size = (60, 40);
+road_image, actor_image, car_images, heart_image = load_images(SCREEN_WIDTH, SCREEN_HEIGHT, actor_size, car_size)
+print(len(car_images))
 collision_sound, point_sound, scream_sound = load_sounds()
 
-# Configurações do ator e carros
-actor = Actor(100, 366, actor_image)
-cars = [Car(600, y, car_images[i], 2 + i * 0.3) for i, y in enumerate([40, 96, 150, 210, 270, 318])]
+# Configurações do ator e carrosself.y =
+actor = Actor(100, SCREEN_HEIGHT - 45, actor_image)
+cars = [Car(800, y, car_images[i % len(car_images)], 2 + i * 0.3) for i, y in enumerate([70, 156, 240, 330, 420, 498])]
+
 
 # Timer do jogo
 timer = Timer(40 * 1000)
 
-# Loop principal do jogo
 running = True
 while running:
     screen.fill((0, 0, 0))  # Limpar a tela

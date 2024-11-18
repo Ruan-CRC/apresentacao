@@ -28,10 +28,10 @@ class Actor:
         return False
 
     def reset_position(self):
-        self.y = 366
+        self.y = 560
 
     def can_move(self):
-        return self.y < 366
+        return self.y < 560
 
     def increment_points(self):
         if self.y < 15:

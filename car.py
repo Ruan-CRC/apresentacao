@@ -17,7 +17,7 @@ class Car:
 
     def reset_position(self):
         if self.x < -50:
-            self.x = 600
+            self.x = 800
 
     def collides_with(self, actor_x, actor_y):
         return self.x < actor_x + 15 < self.x + self.width and self.y < actor_y + 15 < self.y + self.height
