@@ -40,4 +40,6 @@ class Actor:
 
     def draw_lives(self, screen, heart_image):
         for i in range(self.lives):
-            screen.blit(heart_image, (400 + i * 20, 5))
+            screen.blit(heart_image, (400 + i * 20, 18))
+    
+    
