@@ -4,6 +4,7 @@ from car import Car
 from images_and_sounds import *
 from timer import Timer
 from utils import draw_button
+from explosion import Explosion
 
 # Inicializa o Pygame
 pygame.init()
@@ -16,7 +17,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Jogo Freeway")
 
 # Carregar imagens e sons
-road_image, actor_image, car_images, heart_image = load_images(SCREEN_WIDTH, SCREEN_HEIGHT)
+road_image, actor_image, car_images, exp_images, heart_image = load_images(SCREEN_WIDTH, SCREEN_HEIGHT)
 collision_sound, point_sound, scream_sound = load_sounds()
 
 # Tocar música de fundo
@@ -24,7 +25,7 @@ play_background_music()
 
 # Função para reiniciar o jogo
 def restart_game():
-    global actor, cars, timer, game_active
+    global actor, cars, timer, explosions, game_active
     actor = Actor(100, SCREEN_HEIGHT - 45, actor_image)
     cars = [Car(800, y, car_images[i % len(car_images)], 2 + i * 0.3) for i, y in enumerate([70, 156, 240, 330, 420, 498])]
     timer = Timer(40 * 1000)
@@ -34,6 +35,8 @@ def restart_game():
 actor = Actor(100, SCREEN_HEIGHT - 45, actor_image)
 cars = [Car(800, y, car_images[i % len(car_images)], 2 + i * 0.3) for i, y in enumerate([70, 156, 240, 330, 420, 498])]
 timer = Timer(40 * 1000)
+# Lista de explosões
+explosions = []
 
 # Estado do jogo
 running = True
@@ -62,6 +65,10 @@ while running:
             collision_sound.play()
             scream_sound.play()
             actor.lives -= 1
+            # Criar uma explosão no lugar da colisão
+            for car in cars:
+                if car.collides_with(actor.x, actor.y):
+                    explosions.append(Explosion(car.x, car.y, exp_images))
             if actor.points > 0:
                 actor.points -= 1
             if actor.lives == 0:
@@ -70,6 +77,10 @@ while running:
         # Aumentar pontos
         actor.increment_points()
         
+         # Atualizar e desenhar as explosões
+        for explosion in explosions:
+            explosion.update(pygame.time.get_ticks() / 1000)  # Passar o tempo em segundos
+            explosion.draw(screen)
 
         # Exibir a tela de jogo
         screen.blit(road_image, (0, 0))

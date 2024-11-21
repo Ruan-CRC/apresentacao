@@ -1,6 +1,6 @@
 import pygame
 
-def load_images(screen_width, screen_height, car_size = (60, 40)):
+def load_images(screen_width, screen_height):
     
     road_image = pygame.image.load('Imagens/estrada.png')
     road_image = pygame.transform.scale(road_image, (screen_width, screen_height))
@@ -8,16 +8,14 @@ def load_images(screen_width, screen_height, car_size = (60, 40)):
     actor_image = pygame.image.load('Imagens/ator-1.png')
     actor_image = pygame.transform.scale(actor_image, (40, 40))
     
-    car1_image = pygame.image.load('Imagens/carro-1.png')
-    car1_image = pygame.transform.scale(car1_image, car_size)
-    car2_image = pygame.image.load('Imagens/carro-2.png')
-    car2_image = pygame.transform.scale(car2_image, car_size)
-    car3_image = pygame.image.load('Imagens/carro-3.png')
-    car3_image = pygame.transform.scale(car3_image, car_size)
+    car_images = [pygame.image.load(f"Imagens/carro-{i}.png").convert_alpha() for i in range(1, 4)]
+    car_images = [pygame.transform.scale(car_image, (60, 40)) for car_image in car_images]
+    
+    exp_images = [pygame.image.load(f"Imagens/exp2_0{i}.png").convert_alpha() for i in range(1, 5)]
     
     heart_image = pygame.image.load('Imagens/coracao.png')
-    return road_image, actor_image, [car1_image, car2_image, car3_image], heart_image
-40
+    return road_image, actor_image, car_images, exp_images, heart_image
+
 def load_sounds():
     collision_sound = pygame.mixer.Sound('sons/explosao.mp3')
     point_sound = pygame.mixer.Sound('sons/pontos.wav')
