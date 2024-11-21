@@ -1,122 +1,121 @@
 import pygame
-from actor import Actor
-from car import Car
-from images_and_sounds import *
+from ator import Actor
+from carro import Car
+from public import load_images
 from timer import Timer
 from utils import draw_button
-from explosion import Explosion
+from explosao import Explosion
 
-# Inicializa o Pygame
-pygame.init()
-pygame.mixer.init()  # Inicialize o mixer para sons
+# Inicialização do Pygame
+def init_pygame():
+    pygame.init()
+    pygame.mixer.init()
+    return pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# Tamanho da tela
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Jogo Freeway")
+# Constantes de Configuração
+SCREEN_WIDTH = 900
+SCREEN_HEIGHT = 700
+FPS = 60
 
-# Carregar imagens e sons
-road_image, actor_image, car_images, exp_images, heart_image = load_images(SCREEN_WIDTH, SCREEN_HEIGHT)
-collision_sound, point_sound, scream_sound = load_sounds()
+# Classe Principal do Jogo
+class Game:
+    def __init__(self):
+        self.screen = init_pygame()
+        pygame.display.set_caption("Jogo Freeway")
+        self.clock = pygame.time.Clock()
+        self.running = True
+        self.game_active = True
+        self.score_font = pygame.font.SysFont(None, 40)
 
-# Tocar música de fundo
-play_background_music()
+        # Recursos do jogo
+        self.road_image, self.actor_image, self.car_images, self.exp_images, self.heart_image = load_images(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-# Função para reiniciar o jogo
-def restart_game():
-    global actor, cars, timer, explosions, game_active
-    actor = Actor(100, SCREEN_HEIGHT - 45, actor_image)
-    cars = [Car(800, y, car_images[i % len(car_images)], 2 + i * 0.3) for i, y in enumerate([70, 156, 240, 330, 420, 498])]
-    timer = Timer(40 * 1000)
-    game_active = True
+        # Configuração inicial do jogo
+        self.restart_game()
 
-# Configurações iniciais
-actor = Actor(100, SCREEN_HEIGHT - 45, actor_image)
-cars = [Car(800, y, car_images[i % len(car_images)], 2 + i * 0.3) for i, y in enumerate([70, 156, 240, 330, 420, 498])]
-timer = Timer(40 * 1000)
-# Lista de explosões
-explosions = []
+    def restart_game(self):
+        self.actor = Actor(100, SCREEN_HEIGHT - 45, self.actor_image)
+        car_positions = [100, 186, 270, 360, 450, 528]
+        self.cars = [Car(800, y, self.car_images[i % len(self.car_images)], 2 + i * 0.3) for i, y in enumerate(car_positions)]
+        self.timer = Timer(40 * 1000)
+        self.explosions = []
+        self.game_active = True  # Reinicia o estado ativo do jogo
 
-# Estado do jogo
-running = True
-game_active = True
 
-# Fonte para a pontuação
-score_font = pygame.font.SysFont(None, 40)
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
 
-# Loop principal do jogo
-while running:
-    screen.fill((0, 0, 0))  # Limpar a tela
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    if game_active:
-        # Atualizar o estado do jogo
-        actor.move()
-        for car in cars:
+    def update_game(self):
+        self.actor.move()
+        for car in self.cars:
             car.move()
             car.reset_position()
 
-        # Verificar colisão
-        if actor.check_collision(cars):
-            collision_sound.play()
-            scream_sound.play()
-            actor.lives -= 1
-            # Criar uma explosão no lugar da colisão
-            for car in cars:
-                if car.collides_with(actor.x, actor.y):
-                    explosions.append(Explosion(car.x, car.y, exp_images))
-            if actor.points > 0:
-                actor.points -= 1
-            if actor.lives == 0:
-                game_active = False
+        if self.actor.check_collision(self.cars):
+            self.actor.lives -= 1
+            self.create_explosions()
+            self.actor.points = max(0, self.actor.points - 1)
+            if self.actor.lives == 0:
+                self.game_active = False
 
-        # Aumentar pontos
-        actor.increment_points()
-        
-         # Atualizar e desenhar as explosões
-        for explosion in explosions:
-            explosion.update(pygame.time.get_ticks() / 1000)  # Passar o tempo em segundos
-            explosion.draw(screen)
+        self.actor.increment_points()
+        self.update_explosions()
 
-        # Exibir a tela de jogo
-        screen.blit(road_image, (0, 0))
-        actor.draw(screen)
-        actor.draw_lives(screen, heart_image)
-        for car in cars:
-            car.draw(screen)
-            
-        # Exibir a pontuação
-        score_text = score_font.render(f"Pontuação: {actor.points}", True, (255, 255, 255))
-        screen.blit(score_text, (10, 10))
+    def create_explosions(self):
+        for car in self.cars:
+            if car.collides_with(self.actor.x, self.actor.y):
+                self.explosions.append(Explosion(car.x, car.y, self.exp_images))
 
-        # Exibir o temporizador
-        timer.display(screen)
+    def update_explosions(self):
+        for explosion in self.explosions:
+            explosion.update(pygame.time.get_ticks() / 1000)
 
-        # Verificar fim de jogo
-        if timer.is_time_up() or actor.lives == 0:
-            game_active = False
-    else:
-        # Tela de fim de jogo
+    def draw_game(self):
+        self.screen.blit(self.road_image, (0, 0))
+        self.actor.draw(self.screen)
+        self.actor.draw_lives(self.screen, self.heart_image)
+        for car in self.cars:
+            car.draw(self.screen)
+        for explosion in self.explosions:
+            explosion.draw(self.screen)
+        self.draw_ui()
+
+    def draw_ui(self):
+        score_text = self.score_font.render(f"Pontuação: {self.actor.points}", True, (255, 255, 255))
+        self.screen.blit(score_text, (10, 10))
+        self.timer.display(self.screen)
+
+    def draw_game_over(self):
         font = pygame.font.SysFont(None, 60)
         end_text = font.render("Fim de Jogo!", True, (255, 0, 0))
-        screen.blit(end_text, (SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 - 100))
+        self.screen.blit(end_text, (SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 - 100))
 
-        # Exibir a pontuação final
-        final_score_text = score_font.render(f"Sua Pontuação Final: {actor.points}", True, (255, 255, 255))
-        screen.blit(final_score_text, (SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 50))
+        final_score_text = self.score_font.render(f"Sua Pontuação Final: {self.actor.points}", True, (255, 255, 255))
+        self.screen.blit(final_score_text, (SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 50))
 
-        # Botão de reiniciar
         button_font = pygame.font.SysFont(None, 40)
-        draw_button("Reiniciar", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 50, 
-                    button_font, (0, 255, 0), (0, 200, 0), screen, restart_game)
+        draw_button("Reiniciar", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 50,
+                    button_font, (0, 255, 0), (0, 200, 0), self.screen, self.restart_game)
 
+    def run(self):
+        while self.running:
+            self.handle_events()
+            if self.game_active:
+                self.update_game()
+                self.draw_game()
+                if self.timer.is_time_up() or self.actor.lives == 0:
+                    self.game_active = False
+            else:
+                self.draw_game_over()
 
-    # Atualizar a tela
-    pygame.display.update()
+            pygame.display.update()
+            self.clock.tick(FPS)
 
-# Finalizar o Pygame
-pygame.quit()
+        pygame.quit()
+
+# Execução do jogo
+if __name__ == "__main__":
+    game = Game()
+    game.run()
